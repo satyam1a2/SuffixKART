@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping List Results - SuffixKART{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+    
+    .results-table .table {
+        margin-bottom: 0;
+    }
+    
+    .product-price {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .fw-medium {
+        font-weight: 500;
+    }
+    
+    .badge {
+        font-weight: 500;
+    }
+    
+    .badge.rounded-pill {
+        padding: 0.35rem 0.7rem;
+    }
+    
+    .item-requested {
+        font-weight: 600;
+        color: var(--primary);
+        background-color: rgba(62, 125, 64, 0.05);
+    }
+    
+    .seller-info {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+        background-color: rgba(62, 125, 64, 0.05);
+        border-radius: var(--border-radius);
+        margin-top: 0.5rem;
+    }
+    
+    .table-responsive {
+        max-height: none;
+        overflow-y: visible;
+    }
+    
+    .empty-result {
+        padding: 2rem 1rem;
+        text-align: center;
+        background-color: rgba(0,0,0,0.02);
+        border-radius: var(--border-radius);
+    }
+    
+    .product-row:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+    
+    .product-row td {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .actions-cell {
+        white-space: nowrap;
+    }
+    
+    .results-wrapper {
+        margin-bottom: 3rem;
+    }
+    
+    /* Ensure proper spacing before footer */
+    .content-container {
+        padding-bottom: 1.5rem;
+        min-height: 50vh;
+    }
+    
+    @media (max-width: 991.98px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 content-container">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <h1 class="page-title">Shopping List Results</h1>
+            <p class="text-center text-muted mb-4">Here are the products we found that match your shopping list</p>
+            
+            <div class="d-flex justify-content-between mb-4 align-items-center">
+                <div>
+                    <span class="badge bg-primary rounded-pill">{{ results|length }} requested item(s)</span>
+                </div>
+                <a href="{{ url_for('shopping_list') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-list me-1"></i> Start New List
+                </a>
+            </div>
+            
+            <div class="results-wrapper">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Results</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive results-table">
+                            <table class="table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 25%">Requested Item</th>
+                                        <th style="width: 25%">Product</th>
+                                        <th style="width: 15%">Price</th>
+                                        <th style="width: 15%">Availability</th>
+                                        <th style="width: 20%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item_name, matches in results.items() %}
+                                        {% if matches|length > 0 %}
+                                            {% for match in matches %}
+                                                <tr class="product-row {% if loop.first %}item-requested{% endif %}">
+                                                    {% if loop.first %}
+                                                        <td rowspan="{{ matches|length }}" class="align-middle">
+                                                            {{ item_name }}
+                                                        </td>
+                                                    {% endif %}
+                                                    <td>
+                                                        <div>
+                                                            <div class="fw-semibold">{{ match.item.name }}</div>
+                                                            <div class="text-muted small">{{ match.item.description|truncate(60) }}</div>
+                                                            <div class="seller-info">
+                                                                <div class="fw-medium">{{ match.seller.name }}</div>
+                                                                <div class="text-muted">{{ match.seller.address|truncate(40) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <span class="product-price">${{ "%.2f"|format(match.item.price) }}</span>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        {% if match.item.quantity <= 0 %}
+                                                            <span class="badge bg-danger">Out of Stock</span>
+                                                        {% elif match.item.quantity < 5 %}
+                                                            <span class="badge bg-warning text-dark">Low Stock ({{ match.item.quantity }})</span>
+                                                        {% else %}
+                                                            <span class="badge bg-success">In Stock ({{ match.item.quantity }})</span>
+                                                        {% endif %}
+                                                        {% if match.item.category %}
+                                                            <div class="mt-1">
+                                                                <span class="badge bg-light text-primary">{{ match.item.category }}</span>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="align-middle actions-cell">
+                                                        <div class="d-flex flex-column gap-2">
+                                                            {% if match.item.quantity > 0 %}
+                                                                <a href="{{ url_for('buy_item', item_id=match.item._id) }}" class="btn btn-sm btn-primary">
+                                                                    <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                                                </a>
+                                                            {% else %}
+                                                                <button class="btn btn-sm btn-secondary" disabled>
+                                                                    <i class="fas fa-times-circle me-1"></i> Out of Stock
+                                                                </button>
+                                                            {% endif %}
+                                                            <a href="{{ url_for('view_seller', seller_id=match.seller._id) }}" class="btn btn-sm btn-outline-secondary">
+                                                                <i class="fas fa-store me-1"></i> View Seller
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr class="item-requested">
+                                                <td>{{ item_name }}</td>
+                                                <td colspan="4" class="text-center py-3">
+                                                    <div class="empty-result">
+                                                        <i class="fas fa-search fa-2x text-muted mb-2"></i>
+                                                        <h6 class="mb-1">No matches found</h6>
+                                                        <p class="text-muted mb-0 small">We couldn't find any products matching "{{ item_name }}".</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                    <a href="{{ url_for('shopping_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-1"></i> Create New Shopping List
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-1"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

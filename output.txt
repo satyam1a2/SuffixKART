@@ -1,0 +1,7 @@
+# This file is no longer used for communication between Flask and C++
+# Communication now happens directly using JSON data
+# This file is kept for backward compatibility
+Welcome to the grocery Store! Please choose -1 for consumer end -2 for seller end -3 exit
+Welcome to the grocery Store! Please choose -1 for consumer end -2 for seller end -3 exit
+Welcome to the grocery Store! Please choose -1 for consumer end -2 for seller end -3 exit
+Welcome to the grocery Store! Please choose -1 for consumer end -2 for seller end -3 exit

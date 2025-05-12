@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Categories - SuffixKART{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <h1 class="page-title mb-5">Browse Categories</h1>
+            
+            <div class="row g-4">
+                {% for category in categories %}
+                    <div class="col-lg-4 col-md-6">
+                        <a href="{{ url_for('browse_category', category_name=category) }}" class="text-decoration-none">
+                            <div class="card h-100 category-card border-0 shadow-sm">
+                                <div class="card-body text-center p-4">
+                                    <div class="category-icon mb-3 rounded-circle mx-auto">
+                                        <i class="fas 
+                                            {% if category == 'Fruits & Vegetables' %}fa-apple-alt
+                                            {% elif category == 'Dairy & Eggs' %}fa-cheese
+                                            {% elif category == 'Meat & Seafood' %}fa-drumstick-bite
+                                            {% elif category == 'Bakery' %}fa-bread-slice
+                                            {% elif category == 'Pantry Staples' %}fa-utensils
+                                            {% elif category == 'Frozen Foods' %}fa-snowflake
+                                            {% elif category == 'Snacks' %}fa-cookie
+                                            {% elif category == 'Beverages' %}fa-coffee
+                                            {% elif category == 'Household Items' %}fa-home
+                                            {% elif category == 'Health & Personal Care' %}fa-first-aid
+                                            {% else %}fa-shopping-basket{% endif %} 
+                                            fa-2x text-primary"></i>
+                                    </div>
+                                    <h5 class="card-title fw-semibold">{{ category }}</h5>
+                                    <p class="card-text text-muted">Explore our selection of {{ category.lower() }}</p>
+                                    <div class="mt-3">
+                                        <span class="btn btn-primary btn-sm fw-semibold px-4 py-2">
+                                            <span class="d-flex align-items-center justify-content-center">
+                                                <span>View Products</span>
+                                                <i class="fas fa-arrow-right ms-2"></i>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-5">
+                <h2 class="h4 mb-4">Can't find what you're looking for?</h2>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Search Products
+                    </a>
+                    <a href="{{ url_for('shopping_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>Create Shopping List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(46, 125, 50, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .card-title {
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+    }
+    
+    .category-card:hover .card-title {
+        color: var(--primary);
+    }
+    
+    @media (max-width: 991.98px) {
+        .category-icon {
+            width: 70px;
+            height: 70px;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .category-icon {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %} 

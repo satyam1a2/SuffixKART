@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Shopping Cart - SuffixKART{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-responsive {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+    
+    .cart-item {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    
+    .item-details h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .quantity-control {
+        width: 120px;
+        margin: 0 auto;
+    }
+    
+    .input-group .btn-sm {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .input-group .form-control-sm {
+        height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.25rem 0;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    /* Remove number input arrows */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    /* Order summary sticky positioning */
+    .summary-card {
+        position: sticky;
+        top: 90px;
+    }
+    
+    .payment-icons {
+        color: var(--text-secondary);
+    }
+    
+    /* Cart container spacing */
+    .cart-container {
+        min-height: 50vh;
+        padding-bottom: 3rem;
+        margin-bottom: 3rem;
+    }
+    
+    @media (max-width: 991.98px) {
+        .summary-card {
+            position: static;
+            margin-top: 2rem;
+        }
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 767.98px) {
+        .cart-list-desktop {
+            display: none;
+        }
+        
+        .cart-item-mobile {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .item-price-mobile {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .item-subtotal-mobile {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .cart-list-mobile {
+            display: none;
+        }
+    }
+    
+    .empty-cart-icon {
+        width: 100px;
+        height: 100px;
+        background-color: rgba(62, 125, 64, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 cart-container">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <h1 class="page-title mb-4">Your Shopping Cart</h1>
+            
+            {% if cart_items and cart_items|length > 0 %}
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- Desktop Cart Items View -->
+                        <div class="card border-0 shadow-sm mb-4 cart-list-desktop">
+                            <div class="card-header bg-white py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Cart Items</h5>
+                                    <span class="badge bg-primary rounded-pill">{{ cart_items|length }} item(s)</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col" style="width: 40%">Product</th>
+                                                <th scope="col" class="text-center">Price</th>
+                                                <th scope="col" class="text-center">Quantity</th>
+                                                <th scope="col" class="text-end">Subtotal</th>
+                                                <th scope="col" class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in cart_items %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="ms-0">
+                                                                <h6 class="mb-0 fw-semibold text-truncate" style="max-width: 180px;">{{ item.name }}</h6>
+                                                                <small class="text-muted text-truncate" style="max-width: 180px;">Sold by: {{ item.seller.name }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center align-middle">${{ "%.2f"|format(item.price) }}</td>
+                                                    <td class="align-middle">
+                                                        <form action="{{ url_for('update_cart', item_id=item._id) }}" method="post" class="d-flex justify-content-center">
+                                                            <div class="input-group" style="width: 100px;">
+                                                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="this.parentNode.querySelector('input').stepDown(); this.form.submit();">
+                                                                    <i class="fas fa-minus"></i>
+                                                                </button>
+                                                                <input type="number" class="form-control form-control-sm text-center" min="1" max="{{ item.quantity }}" value="{{ item.cart_quantity }}" name="quantity" onchange="this.form.submit()">
+                                                                <button class="btn btn-outline-secondary btn-sm" type="button" onclick="this.parentNode.querySelector('input').stepUp(); this.form.submit();">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td class="text-end align-middle fw-semibold">${{ "%.2f"|format(item.subtotal) }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="{{ url_for('remove_from_cart', item_id=item._id) }}" class="btn btn-sm btn-outline-danger rounded-circle" aria-label="Remove item">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile Cart Items View -->
+                        <div class="cart-list-mobile">
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-white py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Cart Items</h5>
+                                        <span class="badge bg-primary rounded-pill">{{ cart_items|length }} item(s)</span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    {% for item in cart_items %}
+                                        <div class="cart-item">
+                                            <div class="item-details mb-3">
+                                                <h6>{{ item.name }}</h6>
+                                                <small class="text-muted">Sold by: {{ item.seller.name }}</small>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="item-price-mobile">${{ "%.2f"|format(item.price) }}</span>
+                                                <form action="{{ url_for('update_cart', item_id=item._id) }}" method="post">
+                                                    <div class="input-group quantity-control">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="this.parentNode.querySelector('input').stepDown(); this.form.submit();">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                        <input type="number" class="form-control form-control-sm text-center" min="1" max="{{ item.quantity }}" value="{{ item.cart_quantity }}" name="quantity" onchange="this.form.submit()">
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="this.parentNode.querySelector('input').stepUp(); this.form.submit();">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="item-subtotal-mobile">Subtotal: ${{ "%.2f"|format(item.subtotal) }}</div>
+                                                <a href="{{ url_for('remove_from_cart', item_id=item._id) }}" class="btn btn-sm btn-outline-danger" aria-label="Remove item">
+                                                    <i class="fas fa-trash-alt me-1"></i> Remove
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Continue Shopping -->
+                        <div class="d-flex flex-wrap justify-content-between gap-3">
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                            </a>
+                            <a href="{{ url_for('browse_categories') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-th-large me-2"></i>Browse Categories
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Order Summary -->
+                        <div class="card border-0 shadow-sm summary-card">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Subtotal</span>
+                                    <span class="fw-semibold">${{ "%.2f"|format(total_price) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Shipping</span>
+                                    <span class="text-success fw-semibold">Free</span>
+                                </div>
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between mb-4">
+                                    <strong>Total</strong>
+                                    <strong class="text-primary fs-5">${{ "%.2f"|format(total_price) }}</strong>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <a href="{{ url_for('checkout') }}" class="btn btn-primary py-3 fw-semibold">
+                                        <i class="fas fa-check me-2"></i>Proceed to Checkout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Empty Cart -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="empty-cart mb-4">
+                            <div class="empty-cart-icon">
+                                <i class="fas fa-shopping-cart fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="mb-3">Your cart is empty</h3>
+                            <p class="text-muted mb-4">Add some items to your cart and come back here to complete your purchase.</p>
+                        </div>
+                        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Browse Items
+                            </a>
+                            <a href="{{ url_for('browse_categories') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-th-large me-2"></i>Browse Categories
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - SuffixKART{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Search container */
+    .search-container {
+        margin: 20px 0;
+        display: flex;
+        gap: 10px;
+    }
+
+    .search-container input {
+        flex-grow: 1;
+        padding: 12px 16px;
+        border-radius: var(--border-radius);
+        border: 1px solid #e0e5ef;
+        font-size: 1rem;
+        outline: none;
+        transition: border var(--transition-speed) ease;
+    }
+
+    .search-container input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.25rem rgba(62, 125, 64, 0.25);
+    }
+
+    .search-container button {
+        padding: 12px 20px;
+        border-radius: var(--border-radius);
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all var(--transition-speed) ease;
+    }
+
+    .search-container button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Results */
+    .results-container {
+        margin-top: 20px;
+    }
+
+    .results-info {
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+    }
+
+    .search-term {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    /* Result cards */
+    .result-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--box-shadow);
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 20px;
+    }
+
+    .item-details h3 {
+        margin-bottom: 10px;
+        color: var(--primary);
+    }
+
+    .item-price {
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: var(--primary-dark);
+    }
+
+    .item-description {
+        margin-bottom: 15px;
+        color: var(--text-secondary);
+    }
+
+    .item-quantity {
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: rgba(62, 125, 64, 0.1);
+        color: var(--primary);
+        font-size: 12px;
+        border-radius: 4px;
+    }
+
+    /* Seller section */
+    .seller-info {
+        padding: 15px;
+        background-color: rgba(62, 125, 64, 0.05);
+        border-radius: var(--border-radius);
+        border-left: 3px solid var(--primary);
+    }
+
+    .seller-info h4 {
+        margin-bottom: 8px;
+        color: var(--primary);
+    }
+
+    .seller-details {
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+
+    .empty-state h3 {
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state p {
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .result-card {
+            grid-template-columns: 1fr;
+        }
+        
+        .seller-info {
+            margin-top: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Search Results</h1>
+
+<form action="{{ url_for('search_results') }}" method="GET">
+    <div class="search-container">
+        <input type="text" name="query" value="{{ query }}" placeholder="Search for items...">
+        <button type="submit">
+            <i class="fas fa-search me-2"></i>Search
+        </button>
+    </div>
+</form>
+
+<div class="results-container">
+    {% if items %}
+        <div class="results-info">
+            <p>Found {{ items|length }} results for "<span class="search-term">{{ query }}</span>"</p>
+        </div>
+
+        {% for item in items %}
+            <div class="result-card">
+                <div class="item-details">
+                    <h3>{{ item.name }}</h3>
+                    <div class="item-price">${{ "%.2f"|format(item.price) }}</div>
+                    <div class="item-description">{{ item.description }}</div>
+                    <div class="item-quantity">Quantity Available: {{ item.quantity }}</div>
+                    <div class="button-container mt-3">
+                        <a href="{{ url_for('buy_item', item_id=item._id) }}" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                        </a>
+                    </div>
+                </div>
+                <div class="seller-info">
+                    <h4>Seller Information</h4>
+                    <div class="seller-details">
+                        <p><strong>{{ item.seller.name }}</strong></p>
+                        <p>{{ item.seller.address }}</p>
+                    </div>
+                    <a href="{{ url_for('view_seller', seller_id=item.seller._id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-store me-2"></i>View Seller Profile
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+            <h3>No items found</h3>
+            <p>We couldn't find any items matching "{{ query }}".</p>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-home me-2"></i>Back to Home
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

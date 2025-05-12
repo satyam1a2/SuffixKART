@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - SuffixKART{% endblock %}
+
+{% block content %}
+<div class="container main-container">
+    <h1 class="page-title">Checkout</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('checkout') }}" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ session.email }}" readonly>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="zip" class="form-label">Zip</label>
+                                <input type="text" class="form-control" id="zip" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">Payment Method</h5>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="credit" checked required>
+                            <label class="form-check-label" for="credit">Credit Card</label>
+                        </div>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="debit" required>
+                            <label class="form-check-label" for="debit">Debit Card</label>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" required>
+                            <label class="form-check-label" for="paypal">PayPal</label>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="cardName" class="form-label">Name on Card</label>
+                                <input type="text" class="form-control" id="cardName" required>
+                                <small class="text-muted">Full name as displayed on card</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="expMonth" class="form-label">Expiry Month</label>
+                                <input type="text" class="form-control" id="expMonth" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="expYear" class="form-label">Expiry Year</label>
+                                <input type="text" class="form-control" id="expYear" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" required>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <button class="btn btn-primary btn-lg w-100" type="submit">
+                            <i class="fas fa-lock me-2"></i>Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Order Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for item in cart_items %}
+                            <li class="list-group-item py-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-0">{{ item.name }}</h6>
+                                        <small class="text-muted">Qty: {{ item.cart_quantity }}</small>
+                                    </div>
+                                    <span>${{ "%.2f"|format(item.subtotal) }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item py-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Subtotal</span>
+                                <span>${{ "%.2f"|format(total_price) }}</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item py-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Shipping</span>
+                                <span>Free</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item py-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>Total</strong>
+                                <strong class="text-primary">${{ "%.2f"|format(total_price) }}</strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Back to Cart -->
+            <a href="{{ url_for('view_cart') }}" class="btn btn-outline-secondary w-100">
+                <i class="fas fa-arrow-left me-2"></i>Back to Cart
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

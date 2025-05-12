@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}SuffixKART - Search Products{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .search-title {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .search-title:after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background-color: var(--primary-light);
+        margin: 0.75rem auto 0;
+        border-radius: 3px;
+    }
+    
+    .search-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .search-input {
+        border-radius: 50px;
+        padding: 12px 20px;
+        border: 2px solid #e9ecef;
+        transition: all var(--transition-speed);
+        font-size: 1rem;
+    }
+    
+    .search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.25rem rgba(62, 125, 64, 0.25);
+    }
+    
+    .search-button {
+        border-radius: 50px;
+        padding: 12px 30px;
+        background-color: var(--primary);
+        border: none;
+        font-weight: 600;
+        transition: all var(--transition-speed);
+    }
+    
+    .search-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .search-info {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-secondary);
+    }
+    
+    .feature-card {
+        height: 100%;
+        transition: all var(--transition-speed);
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-lg);
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Section -->
+<div class="row">
+    <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+        <div class="search-container">
+            <h1 class="search-title">Find Your Favorite Products</h1>
+            <div class="search-form">
+                <form action="/search_results" method="GET">
+                    <div class="input-group mb-3">
+                        <input type="text" name="query" class="form-control search-input" placeholder="Search for groceries..." aria-label="Search" required>
+                        <button class="btn btn-success search-button" type="submit">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="search-info">
+                <p>Our advanced BK-Tree algorithm will find exact and similar matches!</p>
+                <p>Try searching for products like "apple", "milk", or "bread"</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4 class="feature-title">Smart Search</h4>
+                <p class="card-text">Our BK-Tree algorithm understands typos and provides relevant results even if you misspell products.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h4 class="feature-title">Verified Sellers</h4>
+                <p class="card-text">All our sellers are verified to ensure you get quality products from trusted sources.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card text-center">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h4 class="feature-title">Fast Delivery</h4>
+                <p class="card-text">Get your groceries delivered quickly right to your doorstep.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any additional JavaScript here if needed
+</script>
+{% endblock %} 

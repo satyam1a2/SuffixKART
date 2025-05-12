@@ -1,0 +1,16 @@
+flask==2.0.1
+pymongo==4.1.1
+werkzeug==2.0.2
+dnspython==2.2.1
+pywin32==303; platform_system == "Windows"
+python-dateutil==2.8.2
+pytz==2023.3
+click==8.0.3
+itsdangerous==2.0.1
+Jinja2==3.0.3
+MarkupSafe==2.0.1
+# For C++ JSON support:
+# Install nlohmann/json using package manager:
+# Windows: vcpkg install nlohmann-json
+# Linux: apt-get install nlohmann-json3-dev
+# macOS: brew install nlohmann-json 

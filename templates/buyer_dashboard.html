@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Buyer Dashboard - SuffixKART{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Add extra spacing at bottom to prevent footer overlap */
+    .dashboard-container {
+        margin-bottom: 2rem;
+    }
+    
+    /* Ensure table doesn't overflow on small screens */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    /* Fix card heights */
+    .profile-card, .orders-card {
+        height: 100%;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 dashboard-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="page-title">Welcome, {{ buyer.name }}!</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <!-- Profile Card -->
+            <div class="card profile-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Your Profile</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                            {{ buyer.name[0]|upper }}
+                        </div>
+                        <h5 class="card-title">{{ buyer.name }}</h5>
+                        <p class="card-text text-muted">Member since {{ buyer.date_registered.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                        <p class="text-muted">{{ buyer.email }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-phone me-2"></i>Phone:</strong>
+                        <p class="text-muted">{{ buyer.phone }}</p>
+                    </div>
+                    
+                    <div>
+                        <strong><i class="fas fa-map-marker-alt me-2"></i>Address:</strong>
+                        <p class="text-muted">{{ buyer.address }}</p>
+                    </div>
+                    
+                    <a href="#" class="btn btn-outline-primary w-100 mt-3">
+                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-shopping-basket fa-2x mb-2"></i>
+                                <div>Browse Products</div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('view_cart') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                                <div>View Cart</div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('view_orders') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                                <div>View Orders</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Orders -->
+            <div class="card orders-card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <a href="{{ url_for('view_orders') }}" class="btn btn-sm btn-link">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if orders %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Order Date</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders[:5] %}
+                                        <tr>
+                                            <td>{{ order.date|timestamp_to_date }}</td>
+                                            <td>{{ order.item.name }}</td>
+                                            <td>${{ "%.2f"|format(order.total_price or (order.price * order.quantity)) }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if order.status == 'Processing' %}bg-warning text-dark
+                                                    {% elif order.status == 'Shipped' %}bg-info text-white
+                                                    {% elif order.status == 'Delivered' %}bg-success
+                                                    {% elif order.status == 'Cancelled' %}bg-danger
+                                                    {% else %}bg-secondary{% endif %}">
+                                                    {{ order.status or 'Processing' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5>No orders yet</h5>
+                            <p class="text-muted">Start shopping to see your orders here!</p>
+                            <a href="{{ url_for('index') }}" class="btn btn-primary mt-2">
+                                <i class="fas fa-shopping-basket me-2"></i>Browse Products
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

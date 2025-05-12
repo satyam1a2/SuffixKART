@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - SuffixKART{% endblock %}
+
+{% block content %}
+<div class="container main-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link {% if user_type == 'buyer' %}active{% endif %}" href="{{ url_for('register_buyer') }}">Register as Buyer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if user_type == 'seller' %}active{% endif %}" href="{{ url_for('register_seller') }}">Register as Seller</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    {% if user_type == 'seller' %}
+                        <h1 class="card-title text-center mb-4">Become a Seller</h1>
+                        <p class="text-muted text-center mb-4">Join our marketplace and start selling your products today!</p>
+                        
+                        <form method="post" action="{{ url_for('register_seller') }}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Business Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Business Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Business Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-store me-2"></i>Register as Seller
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <h1 class="card-title text-center mb-4">Create Buyer Account</h1>
+                        <p class="text-muted text-center mb-4">Join SuffixKART to start shopping with advanced C++ algorithms!</p>
+                        
+                        <form method="post" action="{{ url_for('register_buyer') }}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Shipping Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                    
+                    <div class="text-center mt-4">
+                        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

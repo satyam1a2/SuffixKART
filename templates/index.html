@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block title %}SuffixKART - Smart Grocery Shopping{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section rounded-4 overflow-hidden mb-5 position-relative">
+    <div class="bg-primary text-white py-5 px-4 px-md-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-bold mb-3">Welcome to SuffixKART</h1>
+                <p class="lead mb-4">Experience smart grocery shopping powered by advanced C++ algorithms. Find exactly what you need with our intelligent search, fuzzy matching, and efficient item management.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('browse_categories') }}" class="btn btn-light btn-lg shadow-sm">
+                        <i class="fas fa-th-large me-2"></i>Browse Categories
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Search Products
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center position-relative">
+                <div class="hero-graphic">
+                    <i class="fas fa-shopping-basket fa-5x mb-3"></i>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                        <span class="badge bg-white text-primary px-3 py-2 shadow-sm">Bloom Filter</span>
+                        <span class="badge bg-white text-primary px-3 py-2 shadow-sm">BK-Tree</span>
+                        <span class="badge bg-white text-primary px-3 py-2 shadow-sm">Suffix Tree</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Categories -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Featured Categories</h2>
+        <a href="{{ url_for('browse_categories') }}" class="btn btn-outline-primary">
+            <i class="fas fa-th-large me-2"></i>View All
+        </a>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <a href="{{ url_for('browse_category', category_name='Fruits & Vegetables') }}" class="text-decoration-none">
+                <div class="card h-100 category-card border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="category-icon mb-3 rounded-circle mx-auto">
+                            <i class="fas fa-apple-alt fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Fruits & Vegetables</h5>
+                        <p class="card-text text-muted">Fresh produce for healthy living</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <a href="{{ url_for('browse_category', category_name='Dairy & Eggs') }}" class="text-decoration-none">
+                <div class="card h-100 category-card border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="category-icon mb-3 rounded-circle mx-auto">
+                            <i class="fas fa-cheese fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Dairy & Eggs</h5>
+                        <p class="card-text text-muted">Essential dairy products and eggs</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <a href="{{ url_for('browse_category', category_name='Pantry Staples') }}" class="text-decoration-none">
+                <div class="card h-100 category-card border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="category-icon mb-3 rounded-circle mx-auto">
+                            <i class="fas fa-utensils fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Pantry Staples</h5>
+                        <p class="card-text text-muted">Essential items for your kitchen</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Featured Products</h2>
+        <a href="{{ url_for('browse_categories') }}" class="btn btn-outline-primary">
+            <i class="fas fa-th me-2"></i>View All
+        </a>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for item in items %}
+            <div class="col">
+                <div class="card h-100 product-card border-0 shadow-sm">
+                    {% if item.quantity <= 0 %}
+                        <div class="item-badge out-of-stock">Out of Stock</div>
+                    {% elif item.quantity < 5 %}
+                        <div class="item-badge low-stock">Low Stock</div>
+                    {% else %}
+                        <div class="item-badge in-stock">In Stock</div>
+                    {% endif %}
+                    
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-truncate">{{ item.name }}</h5>
+                        <p class="product-price mb-2">${{ "%.2f"|format(item.price) }}</p>
+                        <div class="product-subtitle d-flex flex-wrap align-items-center mb-3">
+                            {% if item.category %}
+                                <span class="badge bg-light text-primary me-2 mb-1">{{ item.category }}</span>
+                            {% endif %}
+                            <span class="text-truncate">Sold by: {{ seller_profiles.find_one({'_id': item.seller_id}).name }}</span>
+                        </div>
+                        <p class="card-text text-truncate-3">{{ item.description }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
+                        <div class="d-grid gap-2">
+                            {% if item.quantity > 0 %}
+                                <a href="{{ url_for('buy_item', item_id=item._id) }}" class="btn btn-primary">
+                                    <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                </a>
+                            {% else %}
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="fas fa-times-circle me-1"></i> Out of Stock
+                                </button>
+                            {% endif %}
+                            <a href="{{ url_for('view_seller', seller_id=item.seller_id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-store me-1"></i> View Seller
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Algorithm Showcase -->
+<section class="mb-5">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h2 class="fw-bold mb-0 h4">Powered by Advanced Algorithms</h2>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-4 text-center">
+                    <div class="algorithm-icon bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-filter fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 fw-bold">Bloom Filter</h4>
+                    <p class="text-muted">Our unique item verification system ensures items are correctly cataloged with minimal storage requirements.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="algorithm-icon bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-search fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 fw-bold">BK-Tree</h4>
+                    <p class="text-muted">Fuzzy search capabilities help you find products even when the spelling isn't exact, powered by BK-Tree algorithm.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="algorithm-icon bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-history fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 fw-bold">Suffix Tree</h4>
+                    <p class="text-muted">Track your order history efficiently with our Suffix Tree implementation for quick historical searching.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_css %}
+    <style>
+    /* Hero section styling */
+    .hero-section {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-graphic {
+        padding: 1.5rem;
+        }
+
+    /* Category cards styling */
+    .category-card {
+        transition: all 0.3s ease;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .category-icon {
+        width: 70px;
+        height: 70px;
+        background-color: rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+        justify-content: center;
+        }
+
+    /* Text truncation */
+    .text-truncate-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 4.5em;
+        }
+
+    /* Algorithm section */
+    .algorithm-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+    }
+    
+    @media (max-width: 991.98px) {
+        .category-icon, .algorithm-icon {
+            width: 60px;
+            height: 60px;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .hero-section {
+            margin-top: -1rem;
+        }
+    }
+    </style>
+{% endblock %}
+{% endblock %}

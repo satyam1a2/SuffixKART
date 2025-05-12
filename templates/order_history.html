@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuffixKART - Order History</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .order-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .order-title {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+        .navbar {
+            background-color: #343a40;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffffff;
+        }
+        .order-card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .badge-buyer {
+            background-color: #17a2b8;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .highlight {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .algorithm-note {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 15px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">SuffixKART</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Become a Seller</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Order History Section -->
+    <div class="container">
+        <div class="order-container">
+            <h2 class="order-title">Order History for "{{ item_name }}"</h2>
+            
+            <div class="highlight">
+                <p class="mb-0"><strong>Item Analysis:</strong> This product has been purchased by {{ orders|length }} customer(s).</p>
+            </div>
+            
+            {% if orders %}
+                <div class="row">
+                    {% for order in orders %}
+                        <div class="col-md-6">
+                            <div class="card order-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title mb-0">Order #{{ loop.index }}</h5>
+                                        <span class="badge badge-buyer">{{ order.buyer_name }}</span>
+                                    </div>
+                                    <p class="card-text"><strong>Date:</strong> {{ order.date|timestamp_to_date }}</p>
+                                    <p class="card-text"><strong>Quantity:</strong> {{ order.quantity }}</p>
+                                    <p class="card-text"><strong>Price:</strong> ${{ "%.2f"|format(order.price) }}</p>
+                                    
+                                    {% if order.seller %}
+                                        <div class="mt-3">
+                                            <p class="mb-1"><strong>Seller:</strong> {{ order.seller.name }}</p>
+                                            <a href="{{ url_for('view_seller', seller_id=order.seller._id) }}" class="btn btn-sm btn-outline-secondary">View Seller</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="algorithm-note">
+                    <p class="mb-0"><i class="fas fa-info-circle me-2"></i> This history was efficiently retrieved using our Suffix Tree algorithm, providing fast pattern matching for order tracking.</p>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No orders found for this item.
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <a href="/search" class="btn btn-outline-primary">Back to Search</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>© 2023 SuffixKART. All rights reserved.</p>
+            <p>Powered by advanced C++ algorithms</p>
+        </div>
+    </footer>
+
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
